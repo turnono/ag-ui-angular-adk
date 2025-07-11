@@ -1,35 +1,11 @@
 # AG UI Angular ADK
 
-A modern Angular UI component library and design system.
+Angular library providing a UI wrapper for ADK agents and a demo application.
 
-## Getting Started
+## Packages
 
-This project contains Angular UI components and utilities for building consistent, accessible web applications.
+### `@ag-ui/angular-adk`
+Core services and standalone components used to integrate ADK agents with the AG‑UI protocol.
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-
-# Build for production
-npm run build
-
-# Run tests
-npm test
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## License
-
-MIT
+### `apps/demo-agent`
+A minimal application demonstrating usage of the library.

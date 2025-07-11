@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/angular/angular-cli/main/packages/angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "agent-ui": {
+      "projectType": "library",
+      "root": "projects/agent-ui",
+      "sourceRoot": "projects/agent-ui/src",
+      "prefix": "ag",
+      "architect": {}
+    },
+    "demo-agent": {
+      "projectType": "application",
+      "root": "apps/demo-agent",
+      "sourceRoot": "apps/demo-agent/src",
+      "prefix": "app",
+      "architect": {}
+    }
+  }
+}
