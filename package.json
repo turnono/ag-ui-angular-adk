@@ -1,21 +1,14 @@
 {
   "name": "ag-ui-angular-adk",
   "version": "1.0.0",
-  "description": "A modern Angular UI component library and design system",
-  "main": "index.js",
+  "description": "Angular UI wrapper for ADK agents",
   "scripts": {
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve demo-agent",
+    "build": "ng build agent-ui",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
-  "keywords": [
-    "angular",
-    "ui",
-    "components",
-    "design-system"
-  ],
   "author": "AG UI Team",
   "license": "MIT",
   "dependencies": {
@@ -24,6 +17,9 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
+    "@ag-ui/core": "^1.0.0",
+    "@angular/fire": "^17.0.0",
+    "firebase": "^9.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.0"
