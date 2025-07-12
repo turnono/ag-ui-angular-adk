@@ -4,18 +4,24 @@ import { AGUIEvent } from '../ag-ui-event';
 
 @Injectable({ providedIn: 'root' })
 export class AgentUiAdkService {
-  private source?: EventSource;
+  private abort?: AbortController;
   private url?: string;
   private payload?: unknown;
+  private headers?: Record<string, string>;
   private reconnectAttempts = 0;
   private reconnectSub?: Subscription;
   private manualClose = false;
   private events$ = new Subject<AGUIEvent>();
 
-  connect(url: string, payload?: unknown): Observable<AGUIEvent> {
+  connect(
+    url: string,
+    payload?: unknown,
+    headers?: Record<string, string>
+  ): Observable<AGUIEvent> {
     this.disconnect();
     this.url = url;
     this.payload = payload;
+    this.headers = headers;
     this.manualClose = false;
     this.events$ = new Subject<AGUIEvent>();
     this.openStream();
@@ -25,40 +31,76 @@ export class AgentUiAdkService {
   disconnect(): void {
     this.manualClose = true;
     this.reconnectSub?.unsubscribe();
-    this.source?.close();
-    this.source = undefined;
+    this.abort?.abort();
+    this.abort = undefined;
     this.events$.complete();
   }
 
-  private openStream(): void {
+  private async openStream(): Promise<void> {
     if (!this.url) return;
-    const query = this.payload ? `?payload=${encodeURIComponent(JSON.stringify(this.payload))}` : '';
-    this.source = new EventSource(this.url + query);
+    this.abort = new AbortController();
+    try {
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+          ...this.headers
+        },
+        body: this.payload ? JSON.stringify(this.payload) : undefined,
+        signal: this.abort.signal
+      });
 
-    this.source.onopen = () => {
+      if (!res.ok || !res.body) throw new Error('SSE connection failed');
       this.reconnectAttempts = 0;
-    };
 
-    this.source.onmessage = msg => {
-      try {
-        const data = JSON.parse(msg.data);
-        const event = this.toAgEvent(data);
-        if (event) {
-          this.events$.next(event);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      let data = '';
+      let doneFlag = false;
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buf.indexOf('\n')) >= 0) {
+          const line = buf.slice(0, idx).replace(/\r$/, '');
+          buf = buf.slice(idx + 1);
+          if (line === '') {
+            if (data) {
+              try {
+                const parsed = JSON.parse(data);
+                const event = this.toAgEvent(parsed);
+                if (event) this.events$.next(event);
+              } catch {
+                // ignore malformed messages
+              }
+            }
+            if (doneFlag) {
+              this.disconnect();
+              return;
+            }
+            data = '';
+            doneFlag = false;
+            continue;
+          }
+          if (line.startsWith('data:')) {
+            data += line.slice(5).trim();
+          } else if (line.startsWith('done:')) {
+            doneFlag = line.slice(5).trim() === 'true';
+          }
         }
-      } catch {
-        // ignore malformed messages
       }
-    };
-
-    this.source.onerror = () => {
-      this.source?.close();
+      if (!this.manualClose) this.scheduleReconnect();
+    } catch {
       if (!this.manualClose) {
         this.scheduleReconnect();
       } else {
         this.events$.complete();
       }
-    };
+    }
   }
 
   private scheduleReconnect(): void {
