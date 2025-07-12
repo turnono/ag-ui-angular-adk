@@ -1,0 +1,8 @@
+{
+  "name": "demo-agent",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@ag-ui/angular-adk": "file:../../dist/agent-ui"
+  }
+}

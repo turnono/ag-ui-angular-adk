@@ -11,15 +11,16 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": true,
-    "module": "es2020",
+    "module": "es2022",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "es2022",
+    "useDefineForClassFields": false,
+    "paths": {
+      "@ag-ui/angular-adk": ["projects/agent-ui/src/public-api.ts"]
+    },
     "types": [],
-    "lib": [
-      "es2020",
-      "dom"
-    ]
+    "lib": ["es2022", "dom"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -27,8 +28,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

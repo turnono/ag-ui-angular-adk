@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/angular/angular-cli/main/packages/angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -12,16 +12,16 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "libs/agent-ui/ng-package.json",
-            "tsConfig": "libs/agent-ui/tsconfig.lib.json"
+            "project": "projects/agent-ui/ng-package.json",
+            "tsConfig": "projects/agent-ui/tsconfig.lib.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "libs/agent-ui/src/test.ts",
-            "tsConfig": "libs/agent-ui/tsconfig.spec.json",
-            "karmaConfig": "libs/agent-ui/karma.conf.js"
+            "main": "projects/agent-ui/src/test.ts",
+            "tsConfig": "projects/agent-ui/tsconfig.spec.json",
+            "karmaConfig": "projects/agent-ui/karma.conf.js"
           }
         }
       }
@@ -31,38 +31,78 @@
       "root": "apps/demo-agent",
       "sourceRoot": "apps/demo-agent/src",
       "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/demo-agent",
+            "outputPath": "dist/frontend",
             "index": "apps/demo-agent/src/index.html",
-            "main": "apps/demo-agent/src/main.ts",
-            "polyfills": [],
+            "browser": "apps/demo-agent/src/main.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "apps/demo-agent/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
-              "apps/demo-agent/src/favicon.ico",
-              "apps/demo-agent/src/assets"
+              {
+                "glob": "**/*",
+                "input": "apps/demo-agent/public"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "apps/demo-agent/src/assets",
+                "output": "/"
+              }
             ],
-            "styles": [],
+            "styles": ["apps/demo-agent/src/styles.scss"],
             "scripts": []
-          }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "100kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "demo-agent:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "apps/demo-agent/src/test.ts",
-            "tsConfig": "apps/demo-agent/tsconfig.spec.json",
-            "karmaConfig": "apps/demo-agent/karma.conf.js"
-          }
+            "proxyConfig": "apps/demo-agent/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "demo-agent:build:production"
+            },
+            "development": {
+              "buildTarget": "demo-agent:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
