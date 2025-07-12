@@ -1,47 +1,37 @@
-name: CI
+name: Build and Test
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: 20
-
-      - name: Cache node_modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build library
+      - name: Build agent-ui library
         run: npx ng build agent-ui
-
-      - name: Serve demo app (optional)
-        run: npx ng serve demo-agent &
-        if: false
 
       - name: Run unit tests
         run: npm test
 
-      - name: Install Playwright (optional)
-        run: npx playwright install
-        if: false
+      # Optional: build demo app
+      - name: Build demo-agent
+        run: npx ng build demo-agent
 
-      - name: Run Playwright tests (optional)
-        run: npx playwright test
-        if: false
+      # Optional: Serve app for E2E testing (requires Playwright/Cypress setup)
+      # - name: Start dev server
+      #   run: npx ng serve demo-agent & sleep 10
