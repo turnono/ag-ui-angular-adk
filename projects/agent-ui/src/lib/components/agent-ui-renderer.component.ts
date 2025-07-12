@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
-import { AgEvent } from './ag-ui-event';
+import { AGUIEvent } from '../ag-ui-event';
 
 @Component({
   selector: 'ag-ui-renderer',
@@ -11,9 +11,11 @@ import { AgEvent } from './ag-ui-event';
     <div class="ag-ui-renderer">
       <div *ngFor="let e of eventsLog">
         <ng-container [ngSwitch]="e.type">
-          <p *ngSwitchCase="'text'">{{ e.content }}</p>
-          <button *ngSwitchCase="'button'">{{ e.label }}</button>
-          <img *ngSwitchCase="'image'" [src]="e.url" [alt]="e.alt || ''" />
+          <p *ngSwitchCase="'TEXT_MESSAGE_CONTENT'">{{ e.text }}</p>
+          <pre *ngSwitchCase="'TOOL_CALL_START'">{{ e.tool }} {{ e.args | json }}</pre>
+          <img *ngSwitchCase="'IMAGE_URL_CONTENT'" [src]="e.url" [alt]="e.alt || ''" />
+          <button *ngSwitchCase="'BUTTON_RESPONSE_REQUEST'" [value]="e.value">{{ e.label }}</button>
+          <pre *ngSwitchCase="'TASK_TREE_UPDATE'">{{ e.nodes | json }}</pre>
           <pre *ngSwitchDefault>{{ e | json }}</pre>
         </ng-container>
       </div>
@@ -24,13 +26,13 @@ import { AgEvent } from './ag-ui-event';
   ]
 })
 export class AgentUiRendererComponent implements OnInit, OnDestroy {
-  @Input() events?: Observable<AgEvent>;
-  eventsLog: AgEvent[] = [];
+  @Input() eventStream?: Observable<AGUIEvent>;
+  eventsLog: AGUIEvent[] = [];
   private sub?: Subscription;
 
   ngOnInit() {
-    if (this.events) {
-      this.sub = this.events.subscribe(e => this.eventsLog.push(e));
+    if (this.eventStream) {
+      this.sub = this.eventStream.subscribe(e => this.eventsLog.push(e));
     }
   }
 
