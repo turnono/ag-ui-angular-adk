@@ -5,4 +5,9 @@ describe('AgentUiAdkService', () => {
     const service = new AgentUiAdkService();
     expect(service).toBeTruthy();
   });
+
+  it('should expose disconnect', () => {
+    const service = new AgentUiAdkService();
+    expect(typeof service.disconnect).toBe('function');
+  });
 });
