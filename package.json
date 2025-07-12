@@ -17,12 +17,11 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@ag-ui/core": "^1.0.0",
     "@angular/fire": "^20.0.0",
     "firebase": "^10.0.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.0",
-    "zone.js": "^0.14.2"
+    "zone.js": "~0.15.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.0.0",
@@ -35,6 +34,6 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.4.0"
+    "typescript": "~5.8.0"
   }
 }
