@@ -8,14 +8,61 @@
       "root": "projects/agent-ui",
       "sourceRoot": "projects/agent-ui/src",
       "prefix": "ag",
-      "architect": {}
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "libs/agent-ui/ng-package.json",
+            "tsConfig": "libs/agent-ui/tsconfig.lib.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/agent-ui/src/test.ts",
+            "tsConfig": "libs/agent-ui/tsconfig.spec.json",
+            "karmaConfig": "libs/agent-ui/karma.conf.js"
+          }
+        }
+      }
     },
     "demo-agent": {
       "projectType": "application",
       "root": "apps/demo-agent",
       "sourceRoot": "apps/demo-agent/src",
       "prefix": "app",
-      "architect": {}
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/demo-agent",
+            "index": "apps/demo-agent/src/index.html",
+            "main": "apps/demo-agent/src/main.ts",
+            "polyfills": [],
+            "tsConfig": "apps/demo-agent/tsconfig.app.json",
+            "assets": [
+              "apps/demo-agent/src/favicon.ico",
+              "apps/demo-agent/src/assets"
+            ],
+            "styles": [],
+            "scripts": []
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "demo-agent:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/demo-agent/src/test.ts",
+            "tsConfig": "apps/demo-agent/tsconfig.spec.json",
+            "karmaConfig": "apps/demo-agent/karma.conf.js"
+          }
+        }
+      }
     }
   }
 }
