@@ -15,7 +15,7 @@ describe('AgentUiRendererComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AgentUiRendererComponent);
     component = fixture.componentInstance;
-    component.events = of({ type: 'text', content: 'hi' });
+    component.eventStream = of({ type: 'TEXT_MESSAGE_CONTENT', text: 'hi' });
     fixture.detectChanges();
   });
 

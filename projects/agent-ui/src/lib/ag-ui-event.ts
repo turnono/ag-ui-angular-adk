@@ -1,6 +1,6 @@
-export type AgEvent =
-  | { type: 'text'; content: string }
-  | { type: 'button'; label: string; value: string }
-  | { type: 'image'; url: string; alt?: string }
-  | { type: 'tool'; tool: string; args: unknown }
-  | { type: 'task-tree'; nodes: unknown };
+export type AGUIEvent =
+  | { type: 'TEXT_MESSAGE_CONTENT'; text: string }
+  | { type: 'TOOL_CALL_START'; tool: string; args: unknown }
+  | { type: 'IMAGE_URL_CONTENT'; url: string; alt?: string }
+  | { type: 'BUTTON_RESPONSE_REQUEST'; label: string; value: string }
+  | { type: 'TASK_TREE_UPDATE'; nodes: unknown };

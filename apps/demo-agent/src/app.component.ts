@@ -8,7 +8,7 @@ import { AgentUiAdkService, AgentUiRendererComponent } from '@ag-ui/angular-adk'
   imports: [CommonModule, AgentUiRendererComponent],
   template: `
     <h1>Demo Agent</h1>
-    <ag-ui-renderer [events]="events$"></ag-ui-renderer>
+    <ag-ui-renderer [eventStream]="events$"></ag-ui-renderer>
   `
 })
 export class AppComponent {
