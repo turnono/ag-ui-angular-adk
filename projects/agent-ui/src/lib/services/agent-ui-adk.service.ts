@@ -1,33 +1,70 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject, Subscription, timer } from 'rxjs';
 import { AGUIEvent } from '../ag-ui-event';
 
 @Injectable({ providedIn: 'root' })
 export class AgentUiAdkService {
+  private source?: EventSource;
+  private url?: string;
+  private payload?: unknown;
+  private reconnectAttempts = 0;
+  private reconnectSub?: Subscription;
+  private manualClose = false;
+  private events$ = new Subject<AGUIEvent>();
+
   connect(url: string, payload?: unknown): Observable<AGUIEvent> {
-    return new Observable<AGUIEvent>(observer => {
-      const query = payload ? `?payload=${encodeURIComponent(JSON.stringify(payload))}` : '';
-      const source = new EventSource(url + query);
+    this.disconnect();
+    this.url = url;
+    this.payload = payload;
+    this.manualClose = false;
+    this.events$ = new Subject<AGUIEvent>();
+    this.openStream();
+    return this.events$.asObservable();
+  }
 
-      source.onmessage = msg => {
-        try {
-          const data = JSON.parse(msg.data);
-          const event = this.toAgEvent(data);
-          if (event) {
-            observer.next(event);
-          }
-        } catch (err) {
-          observer.error(err);
+  disconnect(): void {
+    this.manualClose = true;
+    this.reconnectSub?.unsubscribe();
+    this.source?.close();
+    this.source = undefined;
+    this.events$.complete();
+  }
+
+  private openStream(): void {
+    if (!this.url) return;
+    const query = this.payload ? `?payload=${encodeURIComponent(JSON.stringify(this.payload))}` : '';
+    this.source = new EventSource(this.url + query);
+
+    this.source.onopen = () => {
+      this.reconnectAttempts = 0;
+    };
+
+    this.source.onmessage = msg => {
+      try {
+        const data = JSON.parse(msg.data);
+        const event = this.toAgEvent(data);
+        if (event) {
+          this.events$.next(event);
         }
-      };
+      } catch {
+        // ignore malformed messages
+      }
+    };
 
-      source.onerror = err => {
-        observer.error(err);
-        source.close();
-      };
+    this.source.onerror = () => {
+      this.source?.close();
+      if (!this.manualClose) {
+        this.scheduleReconnect();
+      } else {
+        this.events$.complete();
+      }
+    };
+  }
 
-      return () => source.close();
-    });
+  private scheduleReconnect(): void {
+    this.reconnectAttempts++;
+    const delay = Math.min(Math.pow(2, this.reconnectAttempts) * 1000, 30000);
+    this.reconnectSub = timer(delay).subscribe(() => this.openStream());
   }
 
   private toAgEvent(adk: any): AGUIEvent | null {
