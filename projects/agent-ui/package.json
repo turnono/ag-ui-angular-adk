@@ -1,12 +1,25 @@
 {
   "name": "@ag-ui/angular-adk",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "Angular 20 standalone library for AG-UI protocol with support for Google ADK agents",
+  "author": "Your Name or Org",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "firebase",
+    "adk",
+    "ag-ui",
+    "ai agent",
+    "frontend"
+  ],
   "peerDependencies": {
-    "@angular/common": "^17.0.0",
-    "@angular/core": "^17.0.0",
-    "rxjs": "^7.8.0",
-    "@angular/fire": "^17.0.0",
+    "@angular/core": "^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0",
+    "@angular/fire": "^7.6.0",
     "firebase": "^9.0.0",
-    "@ag-ui/core": "^1.0.0"
+    "rxjs": "^7.0.0",
+    "@ag-ui/core": "^0.1.0"
+  },
+  "exports": {
+    ".": "./dist/"
   }
 }
