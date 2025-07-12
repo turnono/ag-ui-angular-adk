@@ -12,6 +12,6 @@ import { AgentUiAdkService, AgentUiRendererComponent } from '@ag-ui/angular-adk'
   `
 })
 export class AppComponent {
-  events$ = this.agent.connect('http://localhost:8000/run_sse');
+  events$ = this.agent.connect('http://localhost:8000/run_sse', { message: 'Hello' });
   constructor(private agent: AgentUiAdkService) {}
 }
